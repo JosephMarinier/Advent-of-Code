@@ -1,6 +1,6 @@
 fetch(`${window.location.pathname}/input`).then((r) => r.text()).then((text) => {
     const a = "a".charCodeAt(0);
-    const A = "A".charCodeAt(0);
+    const A = "A".charCodeAt(0) - 26;
 
     const priorities = text.trim().split("\n").map((line) => {
         const stack = line.split("");
@@ -8,7 +8,7 @@ fetch(`${window.location.pathname}/input`).then((r) => r.text()).then((text) => 
         const compartmentB = new Set(stack.slice(stack.length / 2));
         const [intersection] = [...compartmentA].filter((item) => compartmentB.has(item));
         const c = intersection.charCodeAt(0);
-        return c < a ? 27 + c - A : 1 + c - a;
+        return 1 + c - (c < a ? A : a);
     });
 
     const answer = priorities.reduce((a, b) => a + b);
