@@ -2,9 +2,7 @@ fetch(`${window.location.pathname}/input`).then((r) => r.text()).then((text) => 
     const a = "a".charCodeAt(0);
     const A = "A".charCodeAt(0);
 
-    const lines = text.trim().split("\n");
-    const teams = Array.from(Array(lines.length / 3), (_, i) => lines.slice(i * 3, (i + 1) * 3));
-    const priorities = teams.map((elves) => {
+    const priorities = Array.from(text.trim().matchAll(/(\w+)\n(\w+)\n(\w+)/g), ([_, ...elves]) => {
         const sets = elves.map((elf) => new Set(elf.split("")));
         const [intersection] = [...sets[0]].filter((element) => sets[1].has(element) && sets[2].has(element));
         const c = intersection.charCodeAt(0);
