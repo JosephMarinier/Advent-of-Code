@@ -1,0 +1,112 @@
+class Computer {
+    constructor(program, inputs = [], getInputs = undefined, outputs = [], callback = (output) => outputs.push(output)) {
+        this.program = program;
+        this.inputs = inputs;
+        this.getInputs = getInputs;
+        this.outputs = outputs;
+        this.callback = callback;
+        this.base = 0;
+        this.i = 0;
+        this.instructions = {
+            1: (modes) => {
+                this.program[this.mode(modes, 3)] = this.get(this.mode(modes, 1)) + this.get(this.mode(modes, 2));
+                this.i += 4;
+            },
+            2: (modes) => {
+                this.program[this.mode(modes, 3)] = this.get(this.mode(modes, 1)) * this.get(this.mode(modes, 2));
+                this.i += 4;
+            },
+            3: (modes) => {
+                if (this.inputs.length === 0) {
+                    this.inputs = this.getInputs();
+                }
+                this.program[this.mode(modes, 1)] = this.inputs.shift();
+                this.i += 2;
+            },
+            4: (modes) => {
+                this.callback(this.get(this.mode(modes, 1)));
+                this.i += 2;
+            },
+            5: (modes) => {
+                this.i = this.get(this.mode(modes, 1)) ? this.get(this.mode(modes, 2)) : this.i + 3;
+            },
+            6: (modes) => {
+                this.i = this.get(this.mode(modes, 1)) ? this.i + 3 : this.get(this.mode(modes, 2));
+            },
+            7: (modes) => {
+                this.program[this.mode(modes, 3)] = Number(this.get(this.mode(modes, 1)) < this.get(this.mode(modes, 2)));
+                this.i += 4;
+            },
+            8: (modes) => {
+                this.program[this.mode(modes, 3)] = Number(this.get(this.mode(modes, 1)) === this.get(this.mode(modes, 2)));
+                this.i += 4;
+            },
+            9: (modes) => {
+                this.base += this.get(this.mode(modes, 1));
+                this.i += 2;
+            },
+            99: () => {
+                console.log(`Halt!`);
+                this.i = Infinity;
+            },
+        };
+    }
+
+    get(i) {
+        return this.program[i] || 0;
+    }
+
+    mode(modes, di) {
+        const mode = modes[di - 1];
+        const pointer = this.i + di;
+        return mode === 1 ? pointer : mode === 2 ? this.base + this.program[pointer] : this.program[pointer];
+    }
+
+    tic() {
+        const instruction = this.program[this.i];
+        const opcode = instruction % 100;
+        console.assert(opcode in this.instructions, `Unknown opcode ${opcode} in instruction ${instruction}.`);
+        const modes = Array.from(String(instruction)).slice(0, -2).reverse().map(Number);
+        this.instructions[opcode](modes);
+    }
+};
+
+fetch(`${window.location.pathname}/input`).then((r) => r.text()).then((text) => {
+    const program = text.trim().split(`,`).map(Number);
+    const format = (outputs) => outputs.map((char) => String.fromCharCode(char)).join(``);
+    const deformat = (inputs) => inputs.split(``).map((char) => char.charCodeAt());
+    const outputs = [];
+    const computer = new Computer(
+        program,
+        deformat(
+`NOT A J
+NOT B T
+OR T J
+NOT C T
+OR T J
+AND D J
+WALK
+`
+        ),
+        undefined,
+        // () => {
+        //     const print = format(outputs);
+        //     outputs.splice(0, outputs.length);
+        //     console.log(print);
+        //     const r = deformat(prompt(print) + `\nWALK\n`);
+        //     console.log(r);
+        //     return r;
+        // },
+        outputs);
+    
+    while (computer.i < program.length) {
+        computer.tic();
+    }
+
+    console.log(outputs);
+    const print = format(outputs);
+    const answer = outputs.pop();
+    console.log(print);
+    console.log(answer);
+    document.querySelector(`input[name="answer"]`).value = answer;
+});
