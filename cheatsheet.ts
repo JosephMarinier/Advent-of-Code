@@ -10,6 +10,12 @@ fetch(`${window.location.pathname}/input`).then((r) => r.text()).then((text) => 
     if (submit) submit.click();
 });
 
+const assertEqual = (actual, expected) => {
+    if (actual !== expected) {
+        throw new Error(`Expecting "${expected}" but got "${actual}"`);
+    }
+}
+
 const array = [];
 
 // Sort ascending
