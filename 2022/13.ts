@@ -3,7 +3,7 @@ fetch(`${window.location.pathname}/input`).then((r) => r.text()).then((text) => 
         const leftIsArray = Array.isArray(left);
         const rightIsArray = Array.isArray(right);
         if (!leftIsArray && !rightIsArray) {
-            return Math.sign(left - right);
+            return left - right;
         } else if (leftIsArray && rightIsArray) {
             const minLength = Math.min(left.length, right.length);
             for (let i = 0; i < minLength; i++) {
@@ -12,10 +12,10 @@ fetch(`${window.location.pathname}/input`).then((r) => r.text()).then((text) => 
                     return c;
                 }
             }
-            return left.length === right.length ? 0 : compare(left.length, right.length);
+            return compare(left.length, right.length);
         } else if (!leftIsArray) {
             return compare([left], right);
-        } else {
+        } else { // !rightIsArray
             return compare(left, [right]);
         }
     };
