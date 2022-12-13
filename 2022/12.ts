@@ -13,6 +13,7 @@ fetch(`${window.location.pathname}/input`).then((r) => r.text()).then((text) => 
     while (!progress[endY][endX]) {
         answer++;
         progress = heights.map((line, y) => line.map((height, x) =>
+            progress[y][x] ||
             (progress[y][x - 1] && height <= heights[y][x - 1] + 1) ||
             (progress[y - 1]?.[x] && height <= heights[y - 1][x] + 1) ||
             (progress[y][x + 1] && height <= heights[y][x + 1] + 1) ||
