@@ -17,7 +17,7 @@ const assertEqual = (actual, expected) => {
     }
 }
 
-const array = [];
+const array = [1, 2, 3];
 
 // Sort ascending
 array.sort((a, b) => a - b)
