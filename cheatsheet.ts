@@ -36,6 +36,17 @@ array.reduce((max, a) => a > max ? a : max)
 // Sum
 const sum = array.reduce((a, b) => a + b)
 
+// Count
+const counts = array.reduce((map, key) => (map.set(key, (map.get(key) || 0) + 1), map), new Map())
+// or better typing with
+const count = (array) => {
+    const map = new Map();
+    array.forEach((key) => {
+        map.set(key, (map.get(key) || 0) + 1);
+    });
+    return map;
+};
+
 const groupBy = (array, by) => {
     const map = new Map();
     array.forEach((item) => {
@@ -67,6 +78,22 @@ if (i === max) {
 } else {
     console.log({ i });
 }
+
+const time = (task) => {
+    const start = performance.now();
+    const r = task();
+    const end = performance.now();
+    let elapsed = end - start;
+    const units = [`ms`, `s`, `m`, `h`, `j`];
+    const index = ([1000, 60, 60, 24].findIndex((max) => {
+        if (elapsed < max) {
+            return true;
+        }
+        elapsed /= max;
+    }) + units.length) % units.length;
+    console.log(`${elapsed} ${units[index]}`);
+    return r;
+};
 
 // A* finds a path from start to goal.
 // h is the heuristic function. h(n) estimates the cost to reach goal from node n.
